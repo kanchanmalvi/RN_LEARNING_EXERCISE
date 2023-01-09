@@ -15,7 +15,6 @@ export const StoreSlice = createSlice({
     getCounterValue: state => {
       AsyncStorage.getItem('incValue').then(result => {
         state.value = result;
-      
       });
     },
     decrement: state => {
