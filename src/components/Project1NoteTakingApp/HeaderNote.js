@@ -9,7 +9,7 @@ import {
   TextInput,
   FlatList,
   TouchableOpacity,
-  Alert
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -91,7 +91,7 @@ const HeaderNote = () => {
       <Text style={styles.Heading}>Note Taking App</Text>
 
       <Image
-        source={require('../../Assets/notetaking.png')}
+        source={require('../../../Assets/images/notetaking.png')}
         style={{margin: 20, width: 350, height: 250}}
       />
 

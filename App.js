@@ -13,9 +13,9 @@ const App = () => {
         <Stack.Screen
           name="todopratice"
           component={TodoAppPractise}
+          //component={Todo}
           options={{headerShown: false}}
         />
-     
       </Stack.Navigator>
     </NavigationContainer>
   );
