@@ -3,25 +3,27 @@ import {
   Alert,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
   ScrollView,
+  TextInput,
+  Text,
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import React, {useState} from 'react';
-import {Text, TextInput} from 'react-native-paper';
-import selectUnitOptions from '../../Assets/constantData/unit';
+import selectUnitOptions from '../../../../../Assets/constantData/unit';
 import {Dropdown} from 'react-native-element-dropdown';
-import axios from 'axios';
-import selectCategoryOptions from '../../Assets/constantData/category';
+import selectCategoryOptions from '../../../../../Assets/constantData/category';
 import DocumentPicker from 'react-native-document-picker';
-import Api from '../API_Servies/Api';
-
-let token =
-  'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiMjNkYzQzZmY1NmRiYzVhNmYyNzUyZTA3ZDIyZjA0ZjdhODliMzY2NzYwMzJlNDRiMzBiMTkxZGZiZWI4YzkxMDE4NWE0YWVkNzVjY2NlNDYiLCJpYXQiOjE2NzM1ODk5MjEuNDAxMTE3LCJuYmYiOjE2NzM1ODk5MjEuNDAxMTIsImV4cCI6MTcwNTEyNTkyMS4yMzY4MDksInN1YiI6IjEzIiwic2NvcGVzIjpbXX0.tJpRc1A9pAoL4ub2kF-RvbE_SSSNPcWRut5njaik38lxGpvNkBDFXalwO7hVIx1dJlrrEmNz9LnSTClqsDK03XV0gjomHRolY3x1_coxVy__7X2GFFC3Mg7haONt6exoPN8cu8zUDrps0dyN8wfCd_BHp90nBcmFo9IfnJkseSAMGyxFOch5BumreOcwpjfAF0MS72y-rUfpk5UuJpQUsvv5NtB4DwLxv13r1xdL7qFjkm9YRRB3g3rdBCELcxln6VPeRSoCY0GOM4T2_OADYhg_t1PrahSZaU76kuyQtLFicaa1afK0B8Ll6ael6V3fCF2gYHuwp5n8VB5gNSyFDuGwSZ2cz04tDa7Zndrih0Z9u7QQU-Z6nVRx03eOJNK87dLAXtANkj21y6ke0DrtJSvLjmXSwkmNn_zSDkoqIunaZ8nYiyFk3g8OuFQBO9wPPrTJT3Sq2LytNiuqohdH5mgfiIdKgDcXRN-eBBtQgooaPfkqQfKL5cH2grkkmrLsaFR65lhiM-oezYqlCRpocKbqStwlEk6mT8Lwg7i9R4qzhoghYDyld-igsMZ-ndvBZ4YvkEAoiGREPwRRr6YjiBuPQZVyt-udceDoZQd6I_HYfNYvj4WtPdEAMf9oep125xLjilKt-EWBDTp2UUZT4jwDQryIL6eHjkacyYzBHnk';
+import Api from '../../../../API_Servies/Api';
+import {useSelector} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
 
 const AddProduct = () => {
   const [isFocus, setIsFocus] = useState(false);
   const [image, setImage] = useState(null);
+
+  const Navigation = useNavigation();
+
+  const settoken = useSelector(state => state?.authToken?.token?.token);
 
   const {
     control,
@@ -43,7 +45,6 @@ const AddProduct = () => {
 
   const onSubmit = async data => {
     var formdata = new FormData();
-
     for (const [key, value] of Object.entries(data)) {
       if (key == 'unit' || key == 'category') {
         formdata.append(key, value?.label);
@@ -56,17 +57,18 @@ const AddProduct = () => {
     console.log(formdata, 'formdata');
 
     try {
-      let headersObj = {
-        headers: {
-          Accept: '*/*',
-          'Content-Type': 'multipart/form-data',
-          Authorization: 'Bearer ' + token,
-        },
-      };
-      let url = 'http://192.168.1.34:8000/api/product';
-      let res = await axios.post(url, formdata, headersObj);
-
-      console.log(res, 'api response');
+      let url = 'product';
+      let param = formdata;
+      const res = await Api.postFormData(
+        url,
+        param,
+        settoken,
+        null,
+        'addproduct',
+      );
+      if (res) {
+        Navigation.navigate('productlist');
+      }
     } catch (error) {
       console.log(error, 'error');
     }
@@ -93,51 +95,75 @@ const AddProduct = () => {
   };
   return (
     <ScrollView style={{}}>
-      <View style={{margin: 10}}>
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              style={styles.input}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              placeholder="Barcode"
-              keyboardType="numeric"
-              maxLength={9}
-            />
-          )}
-          name="barcode"
-        />
-        {errors.barcode && <Text>This is required.</Text>}
+      <View
+        style={{
+          margin: 10,
+        }}>
+        <View
+          style={{
+            borderWidth: 1,
+            borderColor: '#1CB5E0',
+            paddingHorizontal: 10,
+          }}>
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({field: {onChange, onBlur, value}}) => (
+              <TextInput
+                style={styles.input}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder="Barcode"
+                keyboardType="numeric"
+                maxLength={9}
+              />
+            )}
+            name="barcode"
+          />
+        </View>
+        {errors.barcode && (
+          <Text style={{color: 'red'}}>This is required.</Text>
+        )}
       </View>
 
       <View style={{margin: 10}}>
-        <Controller
-          control={control}
-          rules={{
-            maxLength: 100,
-          }}
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              style={styles.input}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              placeholder="Enter Name"
-            />
-          )}
-          name="name"
-        />
-        {errors.name && <Text>This is required.</Text>}
+        <View
+          style={{
+            borderWidth: 1,
+            borderColor: '#1CB5E0',
+            paddingHorizontal: 10,
+          }}>
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({field: {onChange, onBlur, value}}) => (
+              <TextInput
+                style={styles.input}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder="Enter Name"
+              />
+            )}
+            name="name"
+          />
+          {errors.name && <Text>This is required.</Text>}
+        </View>
       </View>
 
       {/* category */}
       <View
-        style={{margin: 10, borderColor: 'white', borderWidth: 1, padding: 10}}>
+        style={{
+          margin: 10,
+          borderColor: '#1CB5E0',
+          borderWidth: 1,
+          padding: 10,
+        }}>
         <Controller
           control={control}
           rules={{
@@ -169,7 +195,12 @@ const AddProduct = () => {
       {/* unit */}
 
       <View
-        style={{margin: 10, borderColor: 'white', borderWidth: 1, padding: 10}}>
+        style={{
+          margin: 10,
+          borderColor: '#1CB5E0',
+          borderWidth: 1,
+          padding: 10,
+        }}>
         <Controller
           control={control}
           rules={{
@@ -198,67 +229,93 @@ const AddProduct = () => {
         {errors.unit && <Text>This is required.</Text>}
       </View>
       <View style={{margin: 10}}>
-        <Controller
-          control={control}
-          rules={{
-            maxLength: 100,
-          }}
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              style={styles.input}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              placeholder="Enter Price"
-              keyboardType="numeric"
-            />
-          )}
-          name="price"
-        />
-        {errors.price && <Text>This is required.</Text>}
+        <View
+          style={{
+            borderColor: '#1CB5E0',
+            borderWidth: 1,
+            paddingHorizontal: 10,
+          }}>
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({field: {onChange, onBlur, value}}) => (
+              <TextInput
+                style={styles.input}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder="Enter Price"
+                keyboardType="numeric"
+              />
+            )}
+            name="price"
+          />
+          {errors.price && <Text>This is required.</Text>}
+        </View>
       </View>
       <View style={{margin: 10}}>
-        <Controller
-          control={control}
-          rules={{
-            maxLength: 100,
-          }}
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              style={styles.input}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              placeholder="Enter Quantity"
-              keyboardType="numeric"
-            />
-          )}
-          name="quantity"
-        />
-        {errors.quantity && <Text>This is required.</Text>}
+        <View
+          style={{
+            borderColor: '#1CB5E0',
+            borderWidth: 1,
+            paddingHorizontal: 10,
+          }}>
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({field: {onChange, onBlur, value}}) => (
+              <TextInput
+                style={styles.input}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder="Enter Quantity"
+                keyboardType="numeric"
+              />
+            )}
+            name="quantity"
+          />
+          {errors.quantity && <Text>This is required.</Text>}
+        </View>
       </View>
       <View style={{margin: 10}}>
-        <Controller
-          control={control}
-          rules={{
-            maxLength: 100,
-          }}
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              style={styles.input}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              placeholder="Enter Description"
-            />
-          )}
-          name="product_description"
-        />
-        {errors.product_description && <Text>This is required.</Text>}
+        <View
+          style={{
+            borderColor: '#1CB5E0',
+            borderWidth: 1,
+            paddingHorizontal: 10,
+          }}>
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({field: {onChange, onBlur, value}}) => (
+              <TextInput
+                style={styles.input}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder="Enter Description"
+              />
+            )}
+            name="product_description"
+          />
+          {errors.product_description && <Text>This is required.</Text>}
+        </View>
       </View>
 
       <View
-        style={{margin: 10, borderColor: 'white', borderWidth: 1, padding: 15}}>
+        style={{
+          margin: 10,
+          borderColor: '#1CB5E0',
+          borderWidth: 1,
+          padding: 15,
+        }}>
         <Controller
           control={control}
           rules={{
@@ -266,19 +323,6 @@ const AddProduct = () => {
           }}
           render={({field: {onChange, onBlur, value}}) => (
             <TouchableOpacity onPress={() => pickImage(onChange)} style={{}}>
-              {value && (
-                <Text
-                  style={{
-                    color: 'orange',
-                    marginLeft: 10,
-                    position: 'absolute',
-                    backgroundColor: 'black',
-                    top: -25,
-                    paddingHorizontal: 5,
-                  }}>
-                  Choose Image
-                </Text>
-              )}
               <Text style={[image ? styles.nn : styles.rr]}>
                 {image ?? value?.uri ?? 'Choose Image'}
               </Text>
@@ -310,22 +354,22 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 18,
-    color: 'black',
+    color: 'gray',
     textAlign: 'left',
   },
   selectedTextStyle: {
     fontSize: 16,
-    color: 'white',
+    color: 'black',
   },
 
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
-    color: 'white',
+    color: 'black',
   },
   // for Modal style
   modalView: {
-    backgroundColor: 'white',
+    backgroundColor: 'black',
     height: '100%',
   },
   loader: {
@@ -342,3 +386,15 @@ const styles = StyleSheet.create({
     color: 'gray',
   },
 });
+
+// let headersObj = {
+//   headers: {
+//     Accept: '*/*',
+//     'Content-Type': 'multipart/form-data',
+//     Authorization: 'Bearer ' + token,
+//   },
+// };
+// let url = 'http://192.168.1.34:8000/api/product';
+// let res = await axios.post(url, formdata, headersObj);
+
+// console.log(res, 'api response');

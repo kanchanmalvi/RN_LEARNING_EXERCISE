@@ -28,10 +28,22 @@ const selectUnitOptions = [
     label: 'piece',
     value: 'Michael Scott 8',
   },
-]
-export default selectUnitOptions
+];
+export default selectUnitOptions;
 
 export const selectInOut = [
+  {
+    label: 'Male',
+    value: 'Michael Scott 1',
+  },
+  {
+    label: 'Female',
+    value: 'Michael Scott 2',
+  },
+];
+
+
+export const selectvaloue = [
   {
     label: 'In',
     value: 'Michael Scott 1',

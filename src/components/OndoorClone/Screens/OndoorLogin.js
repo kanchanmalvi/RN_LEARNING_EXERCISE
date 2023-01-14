@@ -9,10 +9,14 @@ import {
 import React from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import Api from '../../../API_Servies/Api';
-import {useNavigation} from '@react-navigation/native';
-
+import {useNavigation, CommonActions} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useEffect} from 'react';
+import {useDispatch} from 'react-redux';
+import {setSignIn} from '../../../Features/authTokenSlice';
 
 const OndoorLogin = () => {
+  const dispatch = useDispatch();
   const Navigation = useNavigation();
   const {
     control,
@@ -33,15 +37,53 @@ const OndoorLogin = () => {
       };
       const res = await Api.postData(url, body, null, 'login');
       console.log(res, 'api response');
-      Navigation.navigate('productlist');
-      // try {
-      //   await AsyncStorage.setItem('token', res.token);
-      // } catch (error) {
-      //   console.log(error, 'token error');
-      // }
+      await updateRedux(res.data.payload);
+      try {
+        await AsyncStorage.setItem('token', JSON.stringify(res.data.payload));
+        console.log('success Token');
+      } catch (error) {
+        console.log(error, 'token error');
+      }
+      Navigation.dispatch(
+        CommonActions.navigate({
+          name: 'productlist',
+          params: {},
+          index: 0,
+        }),
+      );
     } catch (error) {
       console.log(error, 'error');
     }
+  };
+
+  const asyncData = async () => {
+    try {
+      let getValue = await AsyncStorage.getItem('token');
+      console.log(getValue, 'success GetMsg');
+      if (getValue != null) {
+        updateRedux((getValue));
+        Navigation.dispatch(
+          CommonActions.navigate({
+            name: 'productlist',
+            params: {},
+            index: 0,
+          }),
+        );
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.log(error, 'token error');
+      return false;
+    }
+  };
+  useEffect(() => {
+    asyncData();
+  }, []);
+
+  const updateRedux = data => {
+    data  = JSON.parse(data)
+    dispatch(setSignIn(data));
   };
 
   return (

@@ -1,9 +1,6 @@
 import Constants from '../helpers/http/httpConfig';
 import axios from 'axios';
-// import AsyncStorageService from './AsyncStorageService'
-// import {Alert} from 'react-native'
-
-// const controller = new AbortController();
+import {useSelector} from 'react-redux';
 
 const Api = {
   getData: async (endPoint, token, controller, debugMsg) => {
@@ -161,16 +158,15 @@ const Api = {
     if (controller) {
       configObject['signal'] = controller.signal;
     }
-
     if (Array.isArray(body)) {
       body.map(obj => {
         if (!Array.isArray(obj)) obj['entry_mode'] = Constants.entry_mode;
       });
     } else body['entry_mode'] = Constants.entry_mode;
 
-    // //console.log('token', token)
-    // console.log('url-post', url)
-    // console.log('params', JSON.stringify(body))
+    console.log('token', token);
+    console.log('url-post', url);
+    console.log('params', JSON.stringify(body));
 
     let response = {};
 
