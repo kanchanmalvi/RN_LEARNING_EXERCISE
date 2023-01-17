@@ -1,7 +1,9 @@
 // ** Api Endpoints
 // const domain = "localhost"
 // const domain = "192.168.1.4"
-const domain = '192.168.1.34:8000'
+
+//http://192.168.1.15:8000/api/
+const domain = '192.168.1.15:8000';
 // const domain = "ok-go.in"
 export default {
   // ** This will be prefixed in authorization header with token
@@ -34,4 +36,4 @@ export default {
   //   stampEnabled: true,
 
   entryPoint: 'MobileApp',
-}
+};

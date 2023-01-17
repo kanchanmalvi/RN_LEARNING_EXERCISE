@@ -6,18 +6,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import Api from '../../../API_Servies/Api';
 import {useNavigation, CommonActions} from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useEffect} from 'react';
-import {useDispatch} from 'react-redux';
-import {setSignIn} from '../../../Features/authTokenSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {loginUser} from '../Features/loginTokenSlice';
 
-const OndoorLogin = () => {
+const CopyLoginonPractice = () => {
+  const token = useSelector(state => state?.copytoken);
+  console.log(token, 'toenn access');
+
   const dispatch = useDispatch();
   const Navigation = useNavigation();
+  
   const {
     control,
     handleSubmit,
@@ -28,66 +29,20 @@ const OndoorLogin = () => {
       password: '',
     },
   });
+
   const onsubmit = async data => {
+    console.log(data, 'datafill');
     try {
-      let url = 'user-login';
-      let body = {
-        email: data.email,
-        password: data.password,
-      };
-      const res = await Api.postData(url, body, null, 'login');
-      console.log(res, 'api response');
-      await updateRedux(res.data.payload);
-      try {
-        await AsyncStorage.setItem('token', JSON.stringify(res.data.payload));
-        console.log('success Token');
-      } catch (error) {
-        console.log(error, 'token error');
-      }
-      Navigation.dispatch(
-        CommonActions.navigate({
-          name: 'productlist',
-          params: {},
-          index: 0,
+      dispatch(
+        loginUser({
+          email: data.email,
+          password: data.password,
         }),
       );
     } catch (error) {
       console.log(error, 'error');
     }
   };
-
-  const asyncData = async () => {
-    try {
-      let getValue = await AsyncStorage.getItem('token');
-      console.log(getValue, 'success GetMsg');
-      if (getValue != null) {
-        updateRedux(getValue);
-        Navigation.dispatch(
-          CommonActions.navigate({
-            name: 'productlist',
-            params: {},
-            index: 0,
-          }),
-        );
-      } else {
-        return false;
-      }
-    } catch (error) {
-      console.log(error, 'token error');
-      return false;
-    }
-  };
-  useEffect(() => {
-    asyncData();
-  }, []);
-
-  const updateRedux = async(data) => {
-    if (typeof data == 'string') {
-      data = JSON.parse(data);
-    }
-    dispatch(setSignIn(data));
-  };
-
   return (
     <View style={styles.container}>
       <View
@@ -96,10 +51,6 @@ const OndoorLogin = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        <Image
-          source={require('../../../../Assets/images/onlogin.png')}
-          style={{height: 300, width: 300}}
-        />
         <Text style={{fontSize: 25, color: 'black', textAlign: 'center'}}>
           Ondoor Clone
         </Text>
@@ -171,6 +122,6 @@ const OndoorLogin = () => {
   );
 };
 
-export default OndoorLogin;
+export default CopyLoginonPractice;
 
 const styles = StyleSheet.create({});

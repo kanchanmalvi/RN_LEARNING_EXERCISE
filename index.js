@@ -11,23 +11,20 @@ import {
 
 const theme = {
   ...DefaultTheme,
-  roundness: 2,
-  version: 3,
   colors: {
     ...DefaultTheme.colors,
-    primary: 'pink',
-    secondary: 'green',
-    tertiary: 'blue',
+    primary: 'tomato',
+    secondary: 'yellow',
   },
 };
 
 export default function Main() {
   return (
-    <PaperProvider theme={theme}>
-      <Provider store={store}>
+    <Provider store={store}>
+      <PaperProvider theme={theme}>
         <App />
-      </Provider>
-    </PaperProvider>
+      </PaperProvider>
+    </Provider>
   );
 }
 

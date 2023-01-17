@@ -12,6 +12,7 @@ import {setSignIn} from './src/Features/authTokenSlice';
 import {useDispatch} from 'react-redux';
 import UsersList from './src/components/OndoorClone/Screens/Users/UsersList';
 import Adduser from './src/components/OndoorClone/Screens/Users/Adduser';
+import CopyLoginonPractice from './src/components/CopyLoginonPractice';
 
 const Stack = createNativeStackNavigator();
 
@@ -57,6 +58,12 @@ const App = () => {
           component={Adduser}
           options={{headerShown: false}}
         />
+        {/* 
+        <Stack.Screen
+          name="copyloginonpractice"
+          component={CopyLoginonPractice}
+          options={{headerShown: false}}
+        /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
