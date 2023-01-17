@@ -13,6 +13,7 @@ import {useDispatch} from 'react-redux';
 import UsersList from './src/components/OndoorClone/Screens/Users/UsersList';
 import Adduser from './src/components/OndoorClone/Screens/Users/Adduser';
 import CopyLoginonPractice from './src/components/CopyLoginonPractice';
+import SplashScreen from './src/components/OndoorClone/Screens/SplashScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +32,11 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="splash">
+        <Stack.Screen
+          name="splashScreen"
+          component={SplashScreen}
+          options={{headerShown: false}}
+        />
         <Stack.Screen
           name="ondoorlogin"
           component={OndoorLogin}
@@ -58,12 +64,6 @@ const App = () => {
           component={Adduser}
           options={{headerShown: false}}
         />
-        {/* 
-        <Stack.Screen
-          name="copyloginonpractice"
-          component={CopyLoginonPractice}
-          options={{headerShown: false}}
-        /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );

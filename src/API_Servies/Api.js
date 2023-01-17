@@ -303,8 +303,8 @@ const Api = {
       configObject['signal'] = controller.signal;
     }
 
-    // //console.log('token', token)
-    // //console.log('url-delete', url)
+    console.log('token', token);
+    console.log('url-delete', url);
 
     let response = {};
 
