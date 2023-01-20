@@ -63,11 +63,14 @@ const Adduser = () => {
   };
 
   return (
-    <View>
-      <Text style={{color: 'green', fontSize: 18, textAlign: 'center'}}>
-        Adduser
-      </Text>
-      <ScrollView style={{}}>
+    <View style={{marginBottom: 50}}>
+      <View style={{backgroundColor: '#22c1c3', padding: 15}}>
+        <Text style={{color: 'white', fontSize: 18, textAlign: 'center'}}>
+          Adduser
+        </Text>
+      </View>
+
+      <ScrollView style={{marginVertical: 10}}>
         <View
           style={{
             margin: 10,

@@ -8,7 +8,7 @@ import {
   Text,
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import selectUnitOptions from '../../../../../Assets/constantData/unit';
 import {Dropdown} from 'react-native-element-dropdown';
 import selectCategoryOptions from '../../../../../Assets/constantData/category';
@@ -17,13 +17,29 @@ import Api from '../../../../API_Servies/Api';
 import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 
-const AddProduct = () => {
+const UpdateProduct = props => {
   const [isFocus, setIsFocus] = useState(false);
   const [image, setImage] = useState(null);
-
   const Navigation = useNavigation();
-
   const settoken = useSelector(state => state?.authToken?.token?.token);
+  const updateValue = props.route.params;
+
+  useEffect(() => {
+    if (updateValue) {
+      var newCategory = selectCategoryOptions.find(
+        e => e.label == updateValue?.category,
+      );
+      var newUnit = selectUnitOptions.find(e => e.label == updateValue?.unit);
+      setValue('barcode', '' + updateValue?.barcode);
+      setValue('name', updateValue?.name);
+      setValue('product_description', updateValue?.product_description);
+      setValue('quantity', '' + updateValue?.quantity);
+      setValue('unit', newUnit);
+      setValue('category', newCategory);
+      setValue('image', updateValue?.image);
+      setValue('price', '' + updateValue?.price);
+    }
+  });
 
   const {
     control,
@@ -44,7 +60,7 @@ const AddProduct = () => {
   });
 
   const onSubmit = async data => {
-    var formdata = new FormData();
+    const formdata = new FormData();
     for (const [key, value] of Object.entries(data)) {
       if (key == 'unit' || key == 'category') {
         formdata.append(key, value?.label);
@@ -54,23 +70,22 @@ const AddProduct = () => {
         formdata.append(key, value);
       }
     }
-    console.log(formdata, 'formdata');
-
     try {
-      let url = 'product';
+      let url = 'product-update/' + updateValue.id;
       let param = formdata;
+      console.log(url, param, 'checking url');
       const res = await Api.postFormData(
         url,
         param,
         settoken,
         null,
-        'addproduct',
+        'updateproduct',
       );
       if (res) {
         Navigation.navigate('productlist');
       }
     } catch (error) {
-      console.log(error, 'error');
+      console.log(error, 'put api error');
     }
   };
 
@@ -93,11 +108,12 @@ const AddProduct = () => {
       );
     }
   };
+
   return (
     <View style={{marginBottom: 50}}>
       <View style={{backgroundColor: '#F2994A', padding: 15}}>
         <Text style={{color: 'white', fontSize: 18, textAlign: 'center'}}>
-          Add Product
+          Update Product
         </Text>
       </View>
       <ScrollView style={{marginVertical: 10}}>
@@ -349,7 +365,7 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default UpdateProduct;
 
 const styles = StyleSheet.create({
   container: {
@@ -394,14 +410,18 @@ const styles = StyleSheet.create({
   },
 });
 
-// let headersObj = {
-//   headers: {
-//     Accept: '*/*',
-//     'Content-Type': 'multipart/form-data',
-//     Authorization: 'Bearer ' + token,
-//   },
-// };
-// let url = 'http://192.168.1.34:8000/api/product';
-// let res = await axios.post(url, formdata, headersObj);
-
-// console.log(res, 'api response');
+//   try {
+//     let url = 'http://192.168.1.15:8000/api/product-update/' + updateValue.id;
+//     let headersObj = {
+//       headers: {
+//         Accept: '*/*',
+//         'Content-Type': 'multipart/form-data',
+//         Authorization: 'Bearer ' + settoken,
+//       },
+//     };
+//     console.log(url, formdata, 'checking url');
+//     const res = await axios.post(url, formdata, headersObj);
+//     console.log(res, 'api put response');
+//   } catch (error) {
+//     console.log(error, 'put api error');
+//   }

@@ -2,8 +2,8 @@
 // const domain = "localhost"
 // const domain = "192.168.1.4"
 
-//http://192.168.1.15:8000/api/
-const domain = '192.168.1.15:8000';
+//http://192.168.1.21:8000/api/
+const domain = '192.168.1.21:8000';
 // const domain = "ok-go.in"
 export default {
   // ** This will be prefixed in authorization header with token

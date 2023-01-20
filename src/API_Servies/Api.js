@@ -286,6 +286,76 @@ const Api = {
     }
   },
 
+  putFormData: async (endPoint, body, token, controller, debugMsg) => {
+    let url = Constants.baseUrl + endPoint;
+    let headers = {
+      Accept: '*/*',
+      'Content-Type': 'multipart/form-data',
+    };
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+
+    let configObject = {
+      headers: headers,
+    };
+
+    // For cancelling API request
+    if (controller) {
+      configObject['signal'] = controller.signal;
+    }
+    if (Array.isArray(body)) {
+      body.map(obj => {
+        if (!Array.isArray(obj)) obj['entry_mode'] = Constants.entry_mode;
+      });
+    } else body['entry_mode'] = Constants.entry_mode;
+
+    console.log('token', token);
+    console.log('url-put', url);
+    console.log('params', JSON.stringify(body));
+
+    let response = {};
+
+    let debugMessage = debugMsg ?? '';
+
+    if (!Constants.isConnected) {
+      response['errorMsg'] = Constants.labels_for_non_react_files
+        .connect_internet_message
+        ? Constants.labels_for_non_react_files.connect_internet_message
+        : 'Please check your internet connection !!';
+      return response;
+    }
+
+    try {
+      response = await axios.put(url, body, configObject);
+      if (response?.data?.success) {
+        //console.log(debugMessage + ' SuccessResponse', JSON.stringify(response));
+        return response;
+      } else {
+        //console.log(debugMessage + ' FailureResponse...success value was false', response);
+        response['data'] = response;
+        response['errorMsg'] = Constants.labels_for_non_react_files
+          .something_went_wrong
+          ? Constants.labels_for_non_react_files.something_went_wrong
+          : 'Something went wrong !!';
+        return response;
+      }
+    } catch (error) {
+      //console.log(debugMessage + ' FailureResponse...inside catch', error?.response?.data);
+
+      response['data'] = error?.response?.data;
+      response['errorMsg'] =
+        error?.response?.data?.message ??
+        Constants.labels_for_non_react_files.something_went_wrong;
+
+      // Session is expired, re-login app logic
+      // if (error?.response?.data?.code == 401) {
+      //     Alert.showToast(Constants.labels_for_non_react_files.session_expired)
+      //     await AsyncStorageService._removeData(Constants.asyncStorageKeys.user_login);
+      //     RNRestart.Restart();
+      // }
+      return response;
+    }
+  },
+
   deleteData: async (endPoint, token, controller, debugMsg) => {
     let url = Constants.baseUrl + endPoint;
     let headers = {
